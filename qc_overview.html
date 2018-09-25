@@ -1,0 +1,651 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="utf-8">
+<!-- SlickGrid -->
+<link rel="stylesheet" type="text/css" href="package/SlickGrid/slick.grid.css"/>
+<link rel="stylesheet" type="text/css" href="package/SlickGrid/css/smoothness/jquery-ui-1.11.4.css"/>
+<link rel="stylesheet" type="text/css" href="package/SlickGrid/examples/examples.css"/>
+<link rel="stylesheet" type="text/css" href="package/SlickGrid/controls/slick.pager.css"/>
+<link rel="stylesheet" type="text/css" href="package/d3/d3.parcoords.css">
+
+</head>
+
+<body>
+
+<script type="text/javascript" src="package/jquery.js"></script>
+<script type="text/javascript" src="package/jquery.ui.js"></script>
+<script type="text/javascript" src="package/jquery.ui.sortable.js"></script>
+<script type="text/javascript" src="package/jquery.ui.button.js"></script>
+<script type="text/javascript" src="package/jquery.ui.dialog.js"></script>
+<script type="text/javascript" src="package/d3/d3.min.js"></script>
+<script type="text/javascript" src="package/d3/d3.parcoords.js"></script>
+<script type="text/javascript" src="package/SlickGrid/divgrid.js"></script>
+<script type="text/javascript" src="package/SlickGrid/lib/jquery.event.drag-2.2.js"></script>
+<script type="text/javascript" src="package/SlickGrid/slick.core.js"></script>
+<script type="text/javascript" src="package/SlickGrid/slick.grid.js"></script>
+<script type="text/javascript" src="package/SlickGrid/slick.dataview.js"></script>
+<script type="text/javascript" src="package/SlickGrid/controls/slick.pager.js"></script>
+
+<!-- End SlickGrid -->
+
+
+<style>
+.ui-widget, .tick {
+  font-family: arial;
+  font-size: 8pt;    
+}
+
+body, html {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-size: 12px;
+  background-color: white;
+}
+body {
+  overflow-y: scroll;
+}
+
+#grid, #pager {
+  width: 100%;
+}
+#grid {
+  bottom: 0;
+  height: 300px;
+}
+#pager {
+  bottom: 306px;
+  height: 20px;
+}
+.slick-row:hover {
+  font-weight: bold;
+  color: #069;
+}
+</style>
+
+</head>
+
+<div id="dataset" style="display:none;">
+Sample	subject_id	timepoint	treatment	Total_reads	Uniq_Rate	Multi_Rate	Unmap_Rate	Uniq_Mapped_Reads	Gene_Rate	Ambiguity_Rate	No_Feature_Rate	Total_Tags	CDS_Exon	5UTR_Exon	3UTR_Exon	Introns	Intergenic	Counted_Reads	Norm_Factor	Avg_Corr	Corr_diff	MADScore	isOutlier
+U723	U723	72	untreated	59169972	96.67	1.9	1.43	57197207	92.35	2.04	5.61	168255730	83.45	1.97	10.44	3.83	0.31	52815735	1.0099	0.9582	0.003492	0.02137	N
+U722	U722	72	untreated	51957580	97.15	1.87	0.98	50478704	92.17	2.12	5.7	149239962	83.96	2.03	9.89	3.81	0.31	46524846	0.9854	0.9587	0.004014	0.07541	N
+U721	U721	72	untreated	49281419	96.84	1.87	1.29	47724139	92.49	2.03	5.48	141028806	83.93	1.97	10.06	3.73	0.31	44136854	0.9945	0.9595	0.004812	0.15813	N
+U483	U483	48	untreated	50779927	97.27	1.8	0.93	49392037	90.79	1.81	7.39	147802812	83.68	1.84	9.23	4.89	0.37	44838954	0.9412	0.964	0.009633	0.65773	N
+U482	U482	48	untreated	53151367	96.84	1.79	1.37	51472352	90.52	1.75	7.74	152840253	82.77	1.88	9.79	5.19	0.38	46585843	0.9581	0.9645	0.010113	0.70744	N
+U481	U481	48	untreated	49646695	94.93	1.82	3.25	47130735	90.85	1.81	7.34	140288117	83.58	1.84	9.36	4.85	0.37	42813053	0.9606	0.9631	0.008589	0.54947	N
+U243	U243	24	untreated	45506976	97.29	1.82	0.89	44275763	89.97	1.81	8.22	127432329	80.87	1.96	11.09	5.68	0.4	39831111	0.9978	0.9457	-0.009679	-1.3435	N
+U242	U242	24	untreated	54456024	97.19	1.79	1.02	52927242	90.59	1.81	7.6	152784333	81.36	2.03	11.01	5.23	0.37	47943155	0.9837	0.9472	-0.008156	-1.18566	N
+U241	U241	24	untreated	49046051	97.26	1.77	0.97	47700802	89.99	1.81	8.2	137413796	80.92	2.12	10.88	5.69	0.39	42919444	0.9849	0.9476	-0.007715	-1.13997	N
+U03	U03	0	untreated	55544088	96.67	1.97	1.36	53692893	91.39	2.03	6.59	156792446	82.91	2.08	10.04	4.67	0.3	49064335	0.9025	0.9524	-0.002623	-0.61238	N
+U02	U02	0	untreated	49370493	96.29	2.02	1.69	47537308	91.08	1.97	6.94	138204054	82.12	1.95	10.64	4.97	0.31	43296547	0.9305	0.9527	-0.002315	-0.58042	N
+U01	U01	0	untreated	51667372	96.3	2	1.7	49757657	91.2	1.97	6.83	144599880	82.22	1.95	10.75	4.77	0.31	45377949	0.9236	0.9523	-0.002766	-0.62715	N
+TGJ723	TGJ723	72	TGFb_and_JQ1	56867035	96.92	1.87	1.21	55115679	91.85	1.83	6.33	161897895	83.03	1.89	10.39	4.38	0.31	50617176	0.9404	0.9655	0.011152	0.81508	N
+TGJ722	TGJ722	72	TGFb_and_JQ1	56166242	97.18	1.86	0.96	54584502	91.79	1.84	6.37	160699470	83.02	1.89	10.42	4.37	0.3	50101294	0.9284	0.9655	0.011183	0.81836	N
+TGJ721	TGJ721	72	TGFb_and_JQ1	49585425	96.61	1.87	1.52	47904299	91.5	1.92	6.58	140769627	82.8	2.1	10.3	4.48	0.32	43828377	0.9503	0.9661	0.01175	0.87709	N
+TGJ483	TGJ483	48	TGFb_and_JQ1	58532176	97.3	1.89	0.81	56949544	90.01	1.91	8.09	161602686	79.89	2.09	12.03	5.58	0.42	51253245	1.0088	0.9421	-0.013498	-1.73921	N
+TGJ482	TGJ482	48	TGFb_and_JQ1	57933739	97.23	1.91	0.86	56331014	89.12	1.91	8.97	158981796	79.19	2.11	12.02	6.23	0.45	50197707	1.0325	0.9408	-0.014873	-1.88173	N
+TGJ481	TGJ481	48	TGFb_and_JQ1	55959705	97.2	1.92	0.88	54392698	89.3	1.96	8.74	153926484	79.29	2.06	12.26	5.96	0.44	48566606	1.0096	0.9407	-0.015007	-1.89566	N
+TGJ243	TGJ243	24	TGFb_and_JQ1	59740634	96.43	1.98	1.59	57605013	90.39	1.95	7.65	166052375	80.73	1.94	11.53	5.46	0.34	52068416	0.983	0.9488	-0.006399	-1.00359	N
+TGJ242	TGJ242	24	TGFb_and_JQ1	50047807	96.51	1.95	1.54	48303276	90.71	1.92	7.38	139716637	81.29	2	11.04	5.34	0.33	43811085	0.9723	0.95	-0.005166	-0.87585	N
+TGJ241	TGJ241	24	TGFb_and_JQ1	62731309	96.78	2.01	1.21	60712554	90.24	1.94	7.83	174902382	80.56	1.85	11.71	5.53	0.35	54781934	0.9798	0.9482	-0.007044	-1.07042	N
+TG723	TG723	72	TGFb	59877181	95.19	1.96	2.85	56995843	90.67	2.02	7.31	166224334	82.25	2.05	10.29	5.03	0.38	51675953	1.0931	0.9637	0.009266	0.61962	N
+TG722	TG722	72	TGFb	62347468	96.58	1.97	1.45	60216828	90.43	2	7.57	175786107	82.09	2	10.34	5.17	0.39	54450384	1.086	0.9649	0.010496	0.74711	N
+TG721	TG721	72	TGFb	62046558	96.78	1.97	1.25	60047199	89.94	1.98	8.07	174889324	81.75	2.01	10.42	5.39	0.44	54001630	1.0988	0.9655	0.011163	0.8163	N
+TG483	TG483	48	TGFb	47730297	96.87	1.92	1.21	46236418	89.15	1.9	8.95	135081007	81.11	1.91	10.42	6.13	0.43	41218017	1.0578	0.9589	0.00418	0.09268	N
+TG482	TG482	48	TGFb	54312248	96.66	1.88	1.46	52495924	89.27	1.86	8.86	153161127	81.06	1.95	10.5	6.05	0.44	46855361	1.0588	0.9579	0.003201	-0.00883	N
+TG481	TG481	48	TGFb	53753116	96.84	1.9	1.26	52054588	89.42	1.9	8.68	151945887	81.14	1.95	10.53	5.96	0.43	46542118	1.0641	0.9588	0.004087	0.08295	N
+TG243	TG243	24	TGFb	52081230	97.18	2.03	0.79	50611126	87.49	1.89	10.62	143733867	78.5	2.15	11.33	7.52	0.5	44276690	1.0572	0.958	0.003286	0	N
+TG242	TG242	24	TGFb	47234984	97.25	2.01	0.74	45938014	88.47	1.8	9.72	131883783	80.09	1.87	10.73	6.86	0.45	40637760	1.0342	0.9599	0.005237	0.20221	N
+TG241	TG241	24	TGFb	45293061	97.22	2.01	0.77	44033815	88.25	1.86	9.89	126291203	79.73	1.98	10.93	6.89	0.46	38856115	1.0416	0.9606	0.005972	0.27834	N
+</div>
+
+<div id="canvas1" class="parcoords" style="height:240px;"></div>
+
+<div style="padding:4px;font-size:10pt;">
+<b>Controls:</b> 
+<b>Brush</b> - Drag vertically along an axis.
+<b>Remove Brush</b> - Tap the axis background.
+<b>Reorder Axes</b> - Drag an axis label horizontally.
+<b>Color Lines by Values</b> - Click on an axis label.
+<b>Invert Axis</b> - Double click on an axis label.
+<b>Remove Axis</b> - Drag axis label off the left or the right edge.
+<b>Tooltip</b> - Click on a line to show values, move out of the canvas to remove tooptip.
+</div>
+
+<hr>
+<div id="dialog_Total_reads" title="Total_reads" style="display:none;">
+  <p>Total number of sequencing reads from raw fastq file</p>
+</div>
+<div id="dialog_Uniq_Rate" title="Uniq_Rate" style="display:none;">
+  <p>Percentage of reads uniquely mapped to the reference genome.</p>
+</div>
+<div id="dialog_Multi_Rate" title="Multi_Rate" style="display:none;">
+  <p>Percentage of reads mapped equally well to multiple locations on the reference genome.</p>
+</div>
+<div id="dialog_Unmap_Rate" title="Unmap_Rate" style="display:none;">
+  <p>Percentage of reads not mapped to the reference genome.</p>
+</div>
+<div id="dialog_Uniq_Mapped_Reads" title="Uniq_Mapped_Reads" style="display:none;">
+  <p>Number of uniquely mapped reads.</p>
+</div>
+<div id="dialog_Gene_Rate" title="Gene_Rate" style="display:none;">
+  <p>Percentage of reads mapped to unique gene region, including Exons, UTRs and Introns.</p>
+</div>
+<div id="dialog_Ambiguity_Rate" title="Ambiguity_Rate" style="display:none;">
+  <p>Percentage of reads mapped to gene-overlapping region and can't be unambiguously assigned to either gene.</p>
+</div>
+<div id="dialog_No_Feature_Rate" title="No_Feature_Rate" style="display:none;">
+  <p>Percentage of reads mapped to unannotated genomic regions.</p>
+</div>
+<div id="dialog_Total_Tags" title="Total_Tags" style="display:none;">
+  <p>Total number of tags (reads, one paired-end read counted as two reads)</p>
+</div>
+<div id="dialog_CDS_Exon" title="CDS_Exon" style="display:none;">
+  <p>Percentage of mapped reads on Exons.</p>
+</div>
+<div id="dialog_5UTR_Exon" title="5UTR_Exon" style="display:none;">
+  <p>Percentage of mapped reads on 5' UTR.</p>
+</div>
+<div id="dialog_3UTR_Exon" title="3UTR_Exon" style="display:none;">
+  <p>Percentage of mapped reads on 3' UTR.</p>
+</div>
+<div id="dialog_Introns" title="Introns" style="display:none;">
+  <p>Percentage of mapped reads on Introns.</p>
+</div>
+<div id="dialog_Intergenic" title="Intergenic" style="display:none;">
+  <p>Percentage of mapped reads on Intergenic regions.</p>
+</div>
+<div id="dialog_Counted_Reads" title="Counted_Reads" style="display:none;">
+  <p>Reads counted by featureCounts (=uniquely mapped read  * uniq_rate)</p>
+</div>
+<div id="dialog_Norm_Factor" title="Norm_Factor" style="display:none;">
+  <p>Normalization factor calculated by edgeR</p>
+</div>
+<div id="dialog_Avg_Corr" title="Avg_Corr" style="display:none;">
+  <p>Average correlation where this sample is involved</p>
+</div>
+<div id="dialog_Corr_diff" title="Corr_diff" style="display:none;">
+  <p>
+Avg_Corr : Average correlation where this sample is involved; <br><br>
+Avg_Rest : Average correlation where this sample is NOT involved; <br><br>
+Corr_diff : The difference between Avg_Corr and Avg_Rest.</p>
+</div>
+<div id="dialog_MADScore" title="MADScore" style="display:none;">
+  <p>
+(1) For each sample, calculate the correlation difference. This is simply a difference between the average of all the pair wise correlations that involve the sample (for the same group) and the average of all the pair wise correlations that do not involve the sample. For example, if we have a, b, c, d for group 1, the correlation difference of sample a is:<br><br>
+The difference of Average (correlation(a, b), correlation(a, c), correlation(a, d)) and Average (correlation(b, c), correlation (b, d), correlation(c, d)). You can see that if sample a is an outlier, then the difference will be negative.<br><br>
+(2) Now we have a vector of values (one for each sample). We simply convert this vector to MAD scores (robust Z-scores) by subtracting the medians then dividing it by median absolute deviations (MAD). We use a standard MAD cutoff (e.g. -5) to determine the outliers.</p>
+</div>
+
+<table border=0>
+<tr><td>
+Search: <input type="text" id="txtSearch" value="">
+</td><td>Right click on a column header to show the explanation.</td></tr>
+</table>
+
+<div id="grid"></div>
+<div id="pager"></div>
+
+
+<script type="text/javascript">
+
+var color_set = d3.scale.linear().range(["#3182bd", "#f33"]);
+
+var parcoords = d3.parcoords()("#canvas1")
+	.alpha(0.4)
+	.mode("queue") // progressive rendering
+	.height(240)
+	.margin({
+		top: 36,
+		left: 0,
+		right: 0,
+		bottom: 16
+	});
+
+// load tsv file and create the chart
+
+var dataset = d3.select('#dataset').text().replace(/^\s+|\s+$/g, '');
+var data = d3.tsv.parse(dataset);
+
+
+data.forEach(function(d, i) {
+	d.id = d.id || i;
+});
+
+parcoords
+	.data(data)
+	.hideAxis(["id", "Avg_Corr", "Corr_diff"])
+	.render()
+	.margin({
+		top: 40,
+		right: 20,
+		bottom: 20,
+		left: 50
+	})
+	.reorderable()
+	.brushMode("1D-axes");
+
+// setting up grid
+var column_keys = d3.keys(data[0]);
+var columns = column_keys.map(function(key, i) {
+	return {
+		id: key,
+		name: key,
+		field: key,
+		sortable: true
+	}
+});
+
+
+// update_colors(d3.keys(data[0])[2]);
+
+// click label to activate coloring
+parcoords.svg.selectAll(".dimension")
+	.on("click", update_colors)
+	.selectAll(".label")
+	.style("font-size", "10px"); // change font sizes of selected label
+
+
+//add hover event
+d3.select("#canvas1 svg")
+	.on("click", function() {
+		var mousePosition = d3.mouse(this);
+		highlightLineOnClick(mousePosition, true); //true will also add tooltip
+	})
+	.on("mouseout", function() {
+		cleanTooltip();
+		parcoords.unhighlight();
+	});
+
+
+// update color and font weight of chart based on axis selection
+// modified from here: https://syntagmatic.github.io/parallel-coordinates/
+function update_colors(dimension) {
+
+console.log(dimension);
+
+	// change the fonts to bold
+	parcoords.svg.selectAll(".dimension")
+		.style("font-weight", "normal")
+		.filter(function(d) {
+			return d == dimension;
+		})
+		.style("font-weight", "bold");
+
+	// change color of lines
+	// set domain of color scale
+	var values0 = getActiveData().map(function(d) {
+		return d[dimension];
+	});
+	values = values0.map(function(d) {return parseFloat(d)});
+
+	if (isNaN(values[0])) {
+		var n = {},j=1,i;
+		for(i = 0; i < values0.length; i++) {
+			if (!n[values0[i]]) {
+				n[values0[i]] = j++; 
+			}
+		}
+		for(i = 0; i < values.length; i++) {
+			values[i] = n[values0[i]];
+		}
+	}
+
+	color_set.domain([d3.min(values), d3.max(values)]);
+
+	// change colors for each line
+//	parcoords.color(function(d) {
+//		return color_set([d[dimension]])
+//	}).render();
+
+	parcoords.color(function(d,i) {
+		return color_set(values[i])
+	}).render();
+};
+
+
+// Add highlight for every line on click
+function getCentroids(data) {
+	// this function returns centroid points for data. I had to change the source
+	// for parallelcoordinates and make compute_centroids public.
+	// I assume this should be already somewhere in graph and I don't need to recalculate it
+	// but I couldn't find it so I just wrote this for now
+	var margins = parcoords.margin();
+	var graphCentPts = [];
+
+	data.forEach(function(d) {
+
+		var initCenPts = parcoords.compute_centroids(d).filter(function(d, i) {
+			return i % 2 == 0;
+		});
+
+		// move points based on margins
+		var cenPts = initCenPts.map(function(d) {
+			return [d[0] + margins["left"], d[1] + margins["top"]];
+		});
+
+		graphCentPts.push(cenPts);
+	});
+
+	return graphCentPts;
+}
+
+function getActiveData() {
+	// I'm pretty sure this data is already somewhere in graph
+	if (parcoords.brushed() != false) return parcoords.brushed();
+	return parcoords.data();
+}
+
+function isOnLine(startPt, endPt, testPt, tol) {
+	// check if test point is close enough to a line
+	// between startPt and endPt. close enough means smaller than tolerance
+	var x0 = testPt[0];
+	var y0 = testPt[1];
+	var x1 = startPt[0];
+	var y1 = startPt[1];
+	var x2 = endPt[0];
+	var y2 = endPt[1];
+	var Dx = x2 - x1;
+	var Dy = y2 - y1;
+	var delta = Math.abs(Dy * x0 - Dx * y0 - x1 * y2 + x2 * y1) / Math.sqrt(Math.pow(Dx, 2) + Math.pow(Dy, 2));
+	//console.log(delta);
+	if (delta <= tol) return true;
+	return false;
+}
+
+function findAxes(testPt, cenPts) {
+	// finds between which two axis the mouse is
+	var x = testPt[0];
+	var y = testPt[1];
+
+	// make sure it is inside the range of x
+	if (cenPts[0][0] > x) return false;
+	if (cenPts[cenPts.length - 1][0] < x) return false;
+
+	// find between which segment the point is
+	for (var i = 0; i < cenPts.length; i++) {
+		if (cenPts[i][0] > x) return i;
+	}
+}
+
+function cleanTooltip() {
+	// removes any object under #tooltip is
+	parcoords.svg.selectAll("#tooltip")
+		.remove();
+}
+
+function addTooltip(clicked, clickedCenPts) {
+
+	// add tooltip to multiple clicked lines
+	var clickedDataSet = [];
+	var margins = parcoords.margin();
+	var dim = parcoords.dimensions();
+
+	// get all the values into a single list
+	// I'm pretty sure there is a better way to write this is Javascript
+	for (var i = 0; i < clicked.length; i++) {
+//console.log(clicked[i]);
+		for (var j = 0; j < clickedCenPts[i].length; j++) {
+// Baohong: fix the bug here, should match displaying axis
+//			var text = d3.values(clicked[i])[j];
+			var text = String(clicked[i][dim[j]]); // It must be String type
+			// not clean at all!
+			var x = clickedCenPts[i][j][0] - margins.left;
+			var y = clickedCenPts[i][j][1] - margins.top;
+			clickedDataSet.push([x, y, text]);
+		}
+	};
+
+
+	// add rectangles
+	var fontSize = 14;
+	var padding = 2;
+	var rectHeight = fontSize + 2 * padding; //based on font size
+
+	parcoords.svg.selectAll("rect[id='tooltip']")
+		.data(clickedDataSet).enter()
+		.append("rect")
+		.attr("x", function(d) {
+			return d[0] - d[2].length * 5;
+		})
+		.attr("y", function(d) {
+			return d[1] - rectHeight + 2 * padding;
+		})
+		.attr("rx", "2")
+		.attr("ry", "2")
+		.attr("id", "tooltip")
+		.attr("fill", "grey")
+		.attr("opacity", 0.9)
+		.attr("width", function(d) {
+			return d[2].length * 10;
+		})
+		.attr("height", rectHeight);
+
+	// add text on top of rectangle
+	parcoords.svg.selectAll("text[id='tooltip']")
+		.data(clickedDataSet).enter()
+		.append("text")
+		.attr("x", function(d) {
+			return d[0];
+		})
+		.attr("y", function(d) {
+			return d[1];
+		})
+		.attr("id", "tooltip")
+		.attr("fill", "white")
+		.attr("text-anchor", "middle")
+		.attr("font-size", fontSize)
+		.text(function(d) {
+			return d[2];
+		})
+}
+
+function getClickedLines(mouseClick) {
+	var clicked = [];
+	var clickedCenPts = [];
+
+	// find which data is activated right now
+	var activeData = getActiveData();
+
+	// find centriod points
+	var graphCentPts = getCentroids(activeData);
+
+	if (graphCentPts.length == 0) return false;
+
+	// find between which axes the point is
+	var axeNum = findAxes(mouseClick, graphCentPts[0]);
+	if (!axeNum) return false;
+
+	graphCentPts.forEach(function(d, i) {
+		if (isOnLine(d[axeNum - 1], d[axeNum], mouseClick, 2)) {
+			clicked.push(activeData[i]);
+			clickedCenPts.push(graphCentPts[i]); // for tooltip
+		}
+	});
+
+	return [clicked, clickedCenPts]
+}
+
+
+function highlightLineOnClick(mouseClick, drawTooltip) {
+
+	var clicked = [];
+	var clickedCenPts = [];
+
+	clickedData = getClickedLines(mouseClick);
+
+	if (clickedData && clickedData[0].length != 0) {
+
+		clicked = clickedData[0];
+		clickedCenPts = clickedData[1];
+
+		// highlight clicked line
+		parcoords.highlight(clicked);
+
+		if (drawTooltip) {
+			// clean if anything is there
+			cleanTooltip();
+			// add tooltip
+			addTooltip(clicked, clickedCenPts);
+		}
+
+	}
+}
+
+
+// SlickGrid
+var options = {
+	enableCellNavigation: true,
+	multiColumnSort: false
+};
+columns[0] = {
+	id: "Sample",
+	name: "Sample",
+	field: "Sample",
+	formatter: linkFormatter = function(row, cell, value, columnDef, dataContext) {
+		return '<a href=QC/' + value + '/' + value + '.qc.html target=_blank>' + value + '</a>';
+	}
+};
+
+var dataView = new Slick.Data.DataView();
+var grid = new Slick.Grid("#grid", dataView, columns, options);
+var pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
+
+// wire up model events to drive the grid
+dataView.onRowCountChanged.subscribe(function(e, args) {
+	grid.updateRowCount();
+	grid.render();
+});
+
+dataView.onRowsChanged.subscribe(function(e, args) {
+	grid.invalidateRows(args.rows);
+	grid.render();
+});
+
+
+// column sorting
+var sortcol = column_keys[0];
+var sortdir = 1;
+
+function comparer(a, b) {
+
+    // Baohong Zhang: fix to sort numberic values
+    if ($.isNumeric(a[sortcol]) && $.isNumeric(b[sortcol])) {
+		a[sortcol] = parseFloat(a[sortcol], 10);
+		b[sortcol] = parseFloat(b[sortcol], 10);
+	}
+
+	var x = a[sortcol],
+		y = b[sortcol];
+	return (x == y ? 0 : (x > y ? 1 : -1));
+}
+
+// click header to sort grid column
+grid.onSort.subscribe(function(e, args) {
+	sortdir = args.sortAsc ? 1 : -1;
+	sortcol = args.sortCol.field;
+
+	dataView.sort(comparer, args.sortAsc);
+});
+
+// highlight row in chart
+// Baohong: Added Tooltip
+grid.onMouseEnter.subscribe(function(e, args) {
+//	var d = parcoords.brushed() || data;
+	var r = grid.getCellFromEvent(e).row;
+	var i = dataView.getIdxById(grid.getDataItem(r)["id"])  // Baohong: sorting changes underlying data order
+
+	var d = parcoords.brushed() || data;
+	parcoords.highlight([d[i]]);
+	// clean if anything is there
+	cleanTooltip();
+	// add tooltip
+	addTooltip([d[i]], getCentroids([d[i]]));
+});
+
+grid.onMouseLeave.subscribe(function(e, args) {
+	parcoords.unhighlight();
+	cleanTooltip();
+});
+
+grid.onHeaderContextMenu.subscribe(function(e, args) {
+	e.preventDefault();
+	var theDialog = $("#dialog_"+args.column.id).dialog();
+	theDialog.dialog("option", "position", [e.pageX,e.pageY]);
+	theDialog.dialog("open");
+});
+
+grid.onClick.subscribe(function(e, args) {
+
+	// args.row - row of the clicked cell
+	// args.cell - column of the clicked cell
+});
+
+
+// update grid on brush
+parcoords.on("brush", function(d) {
+	gridUpdate(d);
+});
+
+
+var searchString = "";
+
+function myFilter(data, args) {
+	if (args.searchString != "" && data[columns[0].name].toUpperCase().indexOf(args.searchString.toUpperCase()) == -1 &&
+		data[columns[1].name].toUpperCase().indexOf(args.searchString.toUpperCase()) == -1 &&
+		data[columns[2].name].toUpperCase().indexOf(args.searchString.toUpperCase()) == -1 &&
+		data[columns[3].name].toUpperCase().indexOf(args.searchString.toUpperCase()) == -1) {
+		return false;
+	}
+	return true;
+}
+
+$("#txtSearch").keyup(function(e) {
+	Slick.GlobalEditorLock.cancelCurrentEdit();
+
+	// clear on Esc
+	if (e.which == 27) {
+		this.value = "";
+	}
+
+	searchString = this.value;
+	updateFilter();
+});
+
+function updateFilter() {
+	dataView.setFilterArgs({
+		searchString: searchString
+	});
+	dataView.refresh();
+}
+
+function gridUpdate(data) {
+	dataView.beginUpdate();
+	dataView.setItems(data);
+
+	dataView.setFilterArgs({
+		searchString: searchString
+	});
+
+	dataView.setFilter(myFilter);
+
+	dataView.endUpdate();
+};
+
+// fill grid with data
+gridUpdate(data);
+
+window.onload = function() {
+	if(!window.location.hash) {
+		window.location = window.location + '#loaded';
+		window.location.reload();
+	}
+}
+</script>
+
+</body>
+</html>

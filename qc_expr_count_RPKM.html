@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+    <link href="package/d3/nv.d3.css" rel="stylesheet" type="text/css">
+    <script src="package/d3/d3.js" charset="utf-8"></script>
+    <script src="package/d3/nv.d3.js"></script>
+    <style>
+        text {
+            font: 12px sans-serif;
+        }
+        svg {
+            display: block;
+        }
+        html, body, #canvas1, svg {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<div id="canvas1">
+    <svg></svg>
+</div>
+
+<div id="dataset" style="display:none;">
+[
+	{
+	 "key":"RPKM>=0",
+	 "values":[{"x":0,"y":23246,"size":4,"shape":"circle","label":"TG241"},{"x":1,"y":23035,"size":4,"shape":"circle","label":"TG242"},{"x":2,"y":22858,"size":4,"shape":"circle","label":"TG243"},{"x":3,"y":23422,"size":4,"shape":"circle","label":"TG481"},{"x":4,"y":23499,"size":4,"shape":"circle","label":"TG482"},{"x":5,"y":23603,"size":4,"shape":"circle","label":"TG483"},{"x":6,"y":22791,"size":4,"shape":"circle","label":"TG721"},{"x":7,"y":23083,"size":4,"shape":"circle","label":"TG722"},{"x":8,"y":22891,"size":4,"shape":"circle","label":"TG723"},{"x":9,"y":22516,"size":4,"shape":"circle","label":"TGJ241"},{"x":10,"y":22263,"size":4,"shape":"circle","label":"TGJ242"},{"x":11,"y":22343,"size":4,"shape":"circle","label":"TGJ243"},{"x":12,"y":22869,"size":4,"shape":"circle","label":"TGJ481"},{"x":13,"y":22793,"size":4,"shape":"circle","label":"TGJ482"},{"x":14,"y":22775,"size":4,"shape":"circle","label":"TGJ483"},{"x":15,"y":22716,"size":4,"shape":"circle","label":"TGJ721"},{"x":16,"y":22576,"size":4,"shape":"circle","label":"TGJ722"},{"x":17,"y":22922,"size":4,"shape":"circle","label":"TGJ723"},{"x":18,"y":22888,"size":4,"shape":"circle","label":"U01"},{"x":19,"y":22616,"size":4,"shape":"circle","label":"U02"},{"x":20,"y":23116,"size":4,"shape":"circle","label":"U03"},{"x":21,"y":23720,"size":4,"shape":"circle","label":"U241"},{"x":22,"y":23791,"size":4,"shape":"circle","label":"U242"},{"x":23,"y":23924,"size":4,"shape":"circle","label":"U243"},{"x":24,"y":23429,"size":4,"shape":"circle","label":"U481"},{"x":25,"y":23879,"size":4,"shape":"circle","label":"U482"},{"x":26,"y":23769,"size":4,"shape":"circle","label":"U483"},{"x":27,"y":23512,"size":4,"shape":"circle","label":"U721"},{"x":28,"y":23409,"size":4,"shape":"circle","label":"U722"},{"x":29,"y":23407,"size":4,"shape":"circle","label":"U723"}]
+	},
+	{
+	 "key":"RPKM>=0.5",
+	 "values":[{"x":0,"y":13354,"size":4,"shape":"diamond"},{"x":1,"y":13310,"size":4,"shape":"diamond"},{"x":2,"y":13355,"size":4,"shape":"diamond"},{"x":3,"y":13685,"size":4,"shape":"diamond"},{"x":4,"y":13676,"size":4,"shape":"diamond"},{"x":5,"y":13849,"size":4,"shape":"diamond"},{"x":6,"y":13440,"size":4,"shape":"diamond"},{"x":7,"y":13389,"size":4,"shape":"diamond"},{"x":8,"y":13469,"size":4,"shape":"diamond"},{"x":9,"y":12852,"size":4,"shape":"diamond"},{"x":10,"y":12911,"size":4,"shape":"diamond"},{"x":11,"y":12896,"size":4,"shape":"diamond"},{"x":12,"y":13437,"size":4,"shape":"diamond"},{"x":13,"y":13277,"size":4,"shape":"diamond"},{"x":14,"y":13380,"size":4,"shape":"diamond"},{"x":15,"y":13798,"size":4,"shape":"diamond"},{"x":16,"y":13776,"size":4,"shape":"diamond"},{"x":17,"y":13612,"size":4,"shape":"diamond"},{"x":18,"y":13194,"size":4,"shape":"diamond"},{"x":19,"y":13157,"size":4,"shape":"diamond"},{"x":20,"y":13184,"size":4,"shape":"diamond"},{"x":21,"y":13928,"size":4,"shape":"diamond"},{"x":22,"y":13993,"size":4,"shape":"diamond"},{"x":23,"y":14039,"size":4,"shape":"diamond"},{"x":24,"y":14179,"size":4,"shape":"diamond"},{"x":25,"y":14203,"size":4,"shape":"diamond"},{"x":26,"y":14168,"size":4,"shape":"diamond"},{"x":27,"y":14219,"size":4,"shape":"diamond"},{"x":28,"y":14011,"size":4,"shape":"diamond"},{"x":29,"y":14079,"size":4,"shape":"circle"}]
+	},
+	{
+	 "key":"RPKM>=1",
+	 "values":[{"x":0,"y":11538,"size":4,"shape":"square"},{"x":1,"y":11478,"size":4,"shape":"square"},{"x":2,"y":11507,"size":4,"shape":"square"},{"x":3,"y":11669,"size":4,"shape":"square"},{"x":4,"y":11689,"size":4,"shape":"square"},{"x":5,"y":11784,"size":4,"shape":"square"},{"x":6,"y":11507,"size":4,"shape":"square"},{"x":7,"y":11449,"size":4,"shape":"square"},{"x":8,"y":11467,"size":4,"shape":"square"},{"x":9,"y":11072,"size":4,"shape":"square"},{"x":10,"y":11127,"size":4,"shape":"square"},{"x":11,"y":11119,"size":4,"shape":"square"},{"x":12,"y":11564,"size":4,"shape":"square"},{"x":13,"y":11443,"size":4,"shape":"square"},{"x":14,"y":11484,"size":4,"shape":"square"},{"x":15,"y":11830,"size":4,"shape":"square"},{"x":16,"y":11836,"size":4,"shape":"square"},{"x":17,"y":11599,"size":4,"shape":"square"},{"x":18,"y":11427,"size":4,"shape":"square"},{"x":19,"y":11401,"size":4,"shape":"square"},{"x":20,"y":11407,"size":4,"shape":"square"},{"x":21,"y":11986,"size":4,"shape":"square"},{"x":22,"y":12000,"size":4,"shape":"square"},{"x":23,"y":12057,"size":4,"shape":"square"},{"x":24,"y":12114,"size":4,"shape":"square"},{"x":25,"y":12131,"size":4,"shape":"square"},{"x":26,"y":12112,"size":4,"shape":"square"},{"x":27,"y":12133,"size":4,"shape":"square"},{"x":28,"y":11973,"size":4,"shape":"square"},{"x":29,"y":12065,"size":4,"shape":"square"}]
+	},
+	{
+	 "key":"RPKM>=10",
+	 "values":[{"x":0,"y":3913,"size":4,"shape":"cross"},{"x":1,"y":3826,"size":4,"shape":"cross"},{"x":2,"y":3824,"size":4,"shape":"cross"},{"x":3,"y":3277,"size":4,"shape":"cross"},{"x":4,"y":3263,"size":4,"shape":"cross"},{"x":5,"y":3339,"size":4,"shape":"cross"},{"x":6,"y":3722,"size":4,"shape":"cross"},{"x":7,"y":3670,"size":4,"shape":"cross"},{"x":8,"y":3646,"size":4,"shape":"cross"},{"x":9,"y":3481,"size":4,"shape":"cross"},{"x":10,"y":3527,"size":4,"shape":"cross"},{"x":11,"y":3540,"size":4,"shape":"cross"},{"x":12,"y":3554,"size":4,"shape":"cross"},{"x":13,"y":3456,"size":4,"shape":"cross"},{"x":14,"y":3497,"size":4,"shape":"cross"},{"x":15,"y":3647,"size":4,"shape":"cross"},{"x":16,"y":3600,"size":4,"shape":"cross"},{"x":17,"y":3525,"size":4,"shape":"cross"},{"x":18,"y":4041,"size":4,"shape":"cross"},{"x":19,"y":3997,"size":4,"shape":"cross"},{"x":20,"y":4051,"size":4,"shape":"cross"},{"x":21,"y":4015,"size":4,"shape":"cross"},{"x":22,"y":3941,"size":4,"shape":"cross"},{"x":23,"y":3932,"size":4,"shape":"cross"},{"x":24,"y":3576,"size":4,"shape":"cross"},{"x":25,"y":3573,"size":4,"shape":"cross"},{"x":26,"y":3611,"size":4,"shape":"cross"},{"x":27,"y":3685,"size":4,"shape":"cross"},{"x":28,"y":3567,"size":4,"shape":"cross"},{"x":29,"y":3620,"size":4,"shape":"cross"}]
+	}
+]
+</div>
+
+<script>
+
+var dataset = d3.select('#dataset').text().replace(/^\s+|\s+$/g, '');;
+var data = JSON.parse(dataset);
+
+nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+        .showDistX(true)
+        .showDistY(true)
+        .useVoronoi(true)
+        .color(d3.scale.category10().range())
+        .duration(300);
+
+    // Baohong: fix the lable display
+    chart.xAxis
+        .tickFormat(function(d) {
+            if (!data[0].values[d]) {
+                return d;
+            } else {
+                return data[0].values[d].label;
+            }
+        });
+
+
+    d3.select('#canvas1 svg')
+        .datum(data)
+        .call(chart);
+    nv.utils.windowResize(chart.update);
+    return chart;
+});
+</script>
+
+</body>
+</html>

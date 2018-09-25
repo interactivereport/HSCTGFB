@@ -1,0 +1,301 @@
+<html>
+  <head>
+
+    <link rel="stylesheet" type="text/css" href="../package/venn/css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="../package/venn/css/main.css"/>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="../package/canvasXpress/css/canvasXpress.css"/>
+    <link rel="stylesheet" type="text/css" href="../package/desktop/css/desktop.css" />
+
+
+
+  <script type="text/javascript" src="../package/venn/js/lib/jquery-1.10.2.min.js"></script>
+  <script type="text/javascript" src="../package/venn/js/lib/jquery-ui-1.10.3.min.js"></script>
+  <script type="text/javascript" src="../package/venn/js/lib/bootstrap-3.0.0.min.js"></script>
+  <script type="text/javascript" src="../package/venn/js/lib/bootstrap-tour.js"></script>
+  <script type="text/javascript" src="../package/venn/js/lib/jquery.event.drag-2.2.js"></script>
+  <script type="text/javascript" src="../package/venn/js/lib/slick.core.js"></script>
+  <script type="text/javascript" src="../package/venn/js/lib/slick.grid.js"></script>
+  <script type="text/javascript" src="../package/venn/js/lib/slick.dataview.js"></script>
+  <script type="text/javascript" src="../package/venn/js/lib/d3.v2.js"></script>
+  <script type="text/javascript" src="../package/venn/js/utils.js"></script>
+  <script type="text/javascript" src="../package/venn/js/slider.js"></script>
+  <script type="text/javascript" src="../package/venn/js/venn.js"></script>
+  <script type="text/javascript" src="../package/venn/js/tour.js"></script>
+  <script type="text/javascript" src="../package/venn/js/dge.js"></script>
+  <script type="text/javascript" src="../package/venn/js/version.js"></script>
+  <script type="text/javascript" src="../package/venn/js/proportion-venn.js"></script>
+  <script type="text/javascript" src="../package/canvasXpress/js/canvasXpress.beautify.js"></script>
+
+  </head>
+
+  <body>
+  <script type="text/javascript">
+    var afterRenderObject;
+    var canvasid;
+
+    window.venn_settings = { info_columns: ['Feature', 'Gene Name', 'Description'],
+                               csv_file: 'Mycomp.csv',
+                             };
+    window.addEventListener('storage', storageChanged);
+
+    function storageChanged (event) {
+      console.log('___localstorage changeed_____');
+      if (event.key == 'data4plot') {
+        var winid = window.localStorage.getItem("dgegene");
+        canvasid = "canvas_"+winid;
+
+	    var plotDiv =
+	        '<div id="window_' + winid + '"' + ' class="abs window">' +
+	        '  <div class="abs window_inner">' +
+	        '   <div class="window_top">' +
+	        '     <span class="float_right">' +
+	        '       <a href="#" class="window_resize"></a>' +
+	        '       <a href="#" class="window_close"></a>' +
+	        '     </span>' +
+	        '   </div>' +
+	        '   <div class="abs window_content">' +
+	        '       <canvas id=' + canvasid + ' width=600 height=400></canvas>' +
+	        '   </div>' +
+	        '  </div>' +
+	        '</div>';
+	
+    $('body').append(plotDiv);
+
+  
+        var data4plot = window.localStorage.getItem('data4plot');
+        params =
+          '      {"axisTickScaleFontFactor": 1.3,' +
+          '       "axisTitleFontStyle": "italic",' +
+          '       "axisTitleScaleFontFactor": 1.3,' +
+          '      "graphOrientation": "vertical",' +
+          '      "showLegend": false,' +
+          '      "xAxis2Show": false,' +
+          '      "graphType": "Boxplot",' +
+          '      "jitter": true,' +
+          '      "canvasBox": true,' +
+          '      "printType": "window",' +
+          '      "title": "Gene expression of ' + window.localStorage.getItem("genename") + '",' +
+          '       "showBoxplotOriginalData": true' +
+          '      }';
+  
+  
+      var cxBoxplot = new CanvasXpress({
+          renderTo: canvasid,
+          data: JSON.parse(data4plot),
+          config: JSON.parse(params),
+          afterRender: afterRenderObject
+      });
+      var y = "#window_" + winid;
+      //
+      //        // Bring window to front.
+      JQD.util.window_flat();
+      $(y).addClass('window_stack').show();
+  
+      cxBoxplot.afterRender();
+    }
+  }
+
+var JQD = (function($, window, document, undefined) {
+  // Expose innards of JQD.
+  return {
+    go: function() {
+      for (var i in JQD.init) {
+        JQD.init[i]();
+      }
+    },
+    init: {
+      frame_breaker: function() {
+        if (window.location !== window.top.location) {
+          window.top.location = window.location;
+        }
+      },
+      //
+      // Initialize the desktop.
+      //
+      desktop: function() {
+        // Alias to document.
+        var d = $(document);
+
+
+
+        // Focus active window.
+        d.on('mousedown', 'div.window', function() {
+          // Bring window to front.
+          JQD.util.window_flat();
+          $(this).addClass('window_stack');
+        });
+
+        // Make windows draggable.
+        d.on('mouseenter', 'div.window', function() {
+          $(this).off('mouseenter').draggable({
+            cancel: 'a',
+            drag: function(event, ui) {
+              if (ui.position.top < 0) {
+                ui.position.top = 0;
+              }
+
+            },
+
+            // Baohong: don't contain in parent window
+            //      containment: 'parent',
+            handle: 'div.window_top'
+          }).resizable({
+            //      containment: 'parent',
+            minWidth: 400,
+            minHeight: 200
+          });
+        });
+
+
+        // Maximize or restore the window.
+        d.on('click', 'a.window_resize', function() {
+          JQD.util.window_resize(this);
+        });
+
+        // Close the window.
+        d.on('click', 'a.window_close', function() {
+
+console.log(canvasid);
+var cx = CanvasXpress.getObject(canvasid);
+
+if (cx != null) {
+afterRenderObject = cx.getStack();
+
+console.log(afterRenderObject);
+}
+
+          $(this).closest('div.window').hide();
+          $(this).closest('div.window').remove();
+        });
+      },
+    },
+
+    util: {
+      //
+      // Clear active states, hide menus.
+      //
+      clear_active: function() {
+        $('a.active, tr.active').removeClass('active');
+        $('ul.menu').hide();
+      },
+      //
+      // Zero out window z-index.
+      //
+      window_flat: function() {
+        $('div.window').removeClass('window_stack');
+      },
+      //
+      // Resize modal window.
+      //
+      window_resize: function(el) {
+        // Nearest parent window.
+        var win = $(el).closest('div.window');
+
+        // Is it maximized already?
+        if (win.hasClass('window_full')) {
+          // Restore window position.
+          win.removeClass('window_full').css({
+            'top': win.attr('data-t'),
+            'left': win.attr('data-l'),
+            'right': win.attr('data-r'),
+            'bottom': win.attr('data-b'),
+            'width': win.attr('data-w'),
+            'height': win.attr('data-h')
+          });
+        } else {
+          win.attr({
+            // Save window position.
+            'data-t': win.css('top'),
+            'data-l': win.css('left'),
+            'data-r': win.css('right'),
+            'data-b': win.css('bottom'),
+            'data-w': win.css('width'),
+            'data-h': win.css('height')
+          }).addClass('window_full').css({
+            // Maximize dimensions.
+            'top': '0',
+            'left': '0',
+            'right': '0',
+            'bottom': '0',
+            'width': '100%',
+            'height': '100%'
+          });
+        }
+
+        // Bring window to front.
+        JQD.util.window_flat();
+        win.addClass('window_stack');
+      }
+    }
+  };
+  // Pass in jQuery.
+})(jQuery, this, this.document);
+
+jQuery(document).ready(function() {
+  JQD.go();
+});
+    </script>
+
+
+    <div id='loading'><img src='../package/venn/images/ajax-loader.gif'></div>
+    <div id="wrap">
+      <!-- navbar -->
+
+      <div class='log-list'>
+      <h4>Log messages</h4>
+      </div>
+
+      <div class='container'>
+		<br>
+        <div class='row'>
+          <div class='col-md-4'>
+            <a class='navbar-btn btn pull-right btn-link' href="#" id='tour'><b>Click for Guidance</b></a>
+            <div class='options'>
+              <h3>DGE lists</h3>
+              <ul id='files' class='list-unstyled'></ul>
+            </div>
+   
+            <div class='options'>
+              <h3>Options</h3>
+              <div class='fdr'>
+                <strong>FDR threshold</strong>
+                <div id='fdrSlider'></div>
+                <input class="fdr-fld" type="text" value="0.05" />
+              </div>
+              <div class='fc'>
+                <strong>log FC threshold</strong>
+                <div id='fcSlider'></div>
+                <input class="fc-fld" type="text" value="0" />
+              </div>
+            </div>
+          </div>
+
+          <div id='overlaps' class='tabs-right'>
+              <li data-target='venn' style="display:none;"></li>
+            <div id='venn' class='tab-content'>
+              <div id='not-supported'>
+                <p>This Venn Diagram only support up to 4 classes.
+                <p>Use the 'Proportional Diagram' or the 'Table' tab above
+              </div>
+            </div>
+          </div>
+        </div>
+   
+		<table border=0><tr>
+		<td>Please load <a href=../gex.html target=_blank>gene expression table</a> if it is not already loaded in browser to view gene expression by clicking on gene name. Go back to the tab after gene expression table is loaded. Click on any number in the venn diagram to show the list in the table.</td>
+		<td nowrap><a id='csv-download' href='#'>Download CSV</a></td>
+		</tr></table>
+        <div id='gene-table-info'></div>
+        <div id='gene-table'></div>
+      </div> <!-- end container -->
+  <br>
+  <br>
+    </div> <!-- end wrap -->
+
+    <!-- About box Modal -->
+    <div id="about-modal"></div>
+
+  </body>
+</html>
+
