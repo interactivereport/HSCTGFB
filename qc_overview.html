@@ -55,10 +55,10 @@ body {
 }
 #grid {
   bottom: 0;
-  height: 300px;
+  height: 400px;
 }
 #pager {
-  bottom: 306px;
+  bottom: 406px;
   height: 20px;
 }
 .slick-row:hover {
@@ -103,7 +103,7 @@ TG242	TG242	24	TGFb	47234984	97.25	2.01	0.74	45938014	88.47	1.8	9.72	131883783	8
 TG241	TG241	24	TGFb	45293061	97.22	2.01	0.77	44033815	88.25	1.86	9.89	126291203	79.73	1.98	10.93	6.89	0.46	38856115	1.0416	0.9606	0.005972	0.27834	N
 </div>
 
-<div id="canvas1" class="parcoords" style="height:240px;"></div>
+<div id="canvas1" class="parcoords" style="height:340px;"></div>
 
 <div style="padding:4px;font-size:10pt;">
 <b>Controls:</b> 
@@ -198,7 +198,7 @@ var color_set = d3.scale.linear().range(["#3182bd", "#f33"]);
 var parcoords = d3.parcoords()("#canvas1")
 	.alpha(0.4)
 	.mode("queue") // progressive rendering
-	.height(240)
+	.height(340)
 	.margin({
 		top: 36,
 		left: 0,
@@ -216,6 +216,7 @@ data.forEach(function(d, i) {
 	d.id = d.id || i;
 });
 
+
 parcoords
 	.data(data)
 	.hideAxis(["id", "Avg_Corr", "Corr_diff"])
@@ -228,6 +229,7 @@ parcoords
 	})
 	.reorderable()
 	.brushMode("1D-axes");
+
 
 // setting up grid
 var column_keys = d3.keys(data[0]);
@@ -505,10 +507,7 @@ var options = {
 columns[0] = {
 	id: "Sample",
 	name: "Sample",
-	field: "Sample",
-	formatter: linkFormatter = function(row, cell, value, columnDef, dataContext) {
-		return '<a href=QC/' + value + '/' + value + '.qc.html target=_blank>' + value + '</a>';
-	}
+	field: "Sample"
 };
 
 var dataView = new Slick.Data.DataView();
